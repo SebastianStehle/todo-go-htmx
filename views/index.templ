@@ -1,0 +1,114 @@
+package views
+
+import "todo/model"
+
+templ TodoView(todo model.Todo) {
+    <form hx-put={updateUrl(todo)} class="todo row g-1 mt-1 align-items-center todo-item editing rounded" hx-target="this" hx-swap="outerHTML">
+        <div class="col mt-1 d-flex align-items-center">
+            <input name="Item" type="text" class="form-control form-control-lg border-0 edit-todo-input rounded px-3" value={todo.Item} />
+        </div>
+        <div class="col-auto todo-actions">
+            <button class="btn" type="submit">
+                <i class="fa fa-pencil text-warning btn m-0 p-0"></i>
+            </button>
+        </div>
+        <div class="col-auto todo-actions">
+            <button class="btn" hx-delete={deleteUrl(todo)}>
+                <i class="fa fa-trash-o text-danger btn m-0 p-0"></i>
+            </button>
+        </div>
+    </form>
+}
+
+templ TodoForm() {
+    <form
+        hx-post="/" 
+        hx-ext="bs-validation"
+        hx-swap="outerHTML"
+        hx-validate="true"
+        novalidate class="row bg-white rounded shadow-sm p-2 add-todo-wrapper justify-content-center">
+        <div class="col">
+            <input name="Item" type="text" required class="form-control form-control-lg border-0 add-todo-input bg-transparent rounded" placeholder="Add new .." />
+            <div class="invalid-feedback">
+                Please provide a valid todo text.
+            </div>
+        </div>
+        <div class="col-auto px-0 pt-1 pb-1 mx-0 mr-2">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+}
+
+templ TodoSuccess(todo model.Todo) {
+    @TodoForm()
+
+    <div id="todos" hx-swap-oob="afterbegin">
+        @TodoView(todo)
+    </div>
+
+    <div id="alerts" hx-swap-oob="afterbegin">
+        @AlertSuccess("Todo created successfully")
+    </div>
+}
+
+templ AlertSuccess(text string) {
+    <div class="alert alert-success" role="alert">
+        {text}
+    </div>
+}
+
+templ Header() {
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <title>Document</title>
+}
+
+templ Footer() {
+    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <script src="/scripts.js"></script>
+}
+
+templ TodosView(todos []model.Todo) {
+    <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            @Header()
+        </head>
+        <body>
+        <div class="container m-5 p-2 rounded mx-auto bg-light shadow">
+            <!-- App title section -->
+            <div class="row m-1 p-4">
+                <div class="col">
+                    <div class="p-1 h1 text-primary text-center mx-auto display-inline-block">
+                        <i class="fa fa-check bg-primary text-white rounded p-2"></i>
+                        <u>Todo List</u>
+                    </div>
+                </div>
+            </div>
+            <!-- Create todo section -->
+            <div class="row m-1 p-3">
+                <div class="col col-11 mx-auto">
+                    @TodoForm()
+                </div>
+            </div>
+            <div class="p-2 m-2 mx-4 border-black-25 border-bottom"></div>
+            <!-- Todo list section -->
+            <div class="row mx-1 px-5 pb-3 w-80">
+                <div class="col mx-auto" id="todos">
+                    for _, todo := range todos {
+                        @TodoView(todo)
+                    }
+                </div>
+
+                <div id="alerts">
+                </div>
+            </div>
+        </div>
+        @Footer()
+        </body>
+    </html>
+}
